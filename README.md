@@ -22,6 +22,29 @@ Go into the folder. Build with this command:
 go build
 ```
 
+## Usage
+
+```
+NAME:
+   githook - on socket connection, update files from git
+
+USAGE:
+   githook [global options] command [command options] [arguments...]
+
+VERSION:
+   0.1.0
+
+COMMANDS:
+   help, h	Shows a list of commands or help for one command
+
+GLOBAL OPTIONS:
+   --remote, -r "origin"		name of remote repository
+   --branch, -b "master"		branch of remote repository
+   --socket, -s "./githook.sock"	path to socket to listen for connection
+   --help, -h				show help
+   --version, -v			print the version
+```
+
 ## License
 
 This software is licensed under MIT license.
