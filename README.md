@@ -24,25 +24,50 @@ go build
 
 ## Usage
 
+The tool supports 2 commands:
+
+### Socket Server
+
+Command:
 ```
+githook server
+```
+This command creates a unix socket server. It updates the local git
+repository to origin/master branch whenever there is socket input to
+the socket file (default: `./githook.sock`).
+
+You may change the remote repository name, branch or socket file path
+by the command options:
+
+```manpage
 NAME:
-   githook - helps update local git repository on triggers
+   server - socket server. listen to unix socket and update local git repository accordingly
 
 USAGE:
-   githook [global options] command [command options] [arguments...]
+   command server [command options] [arguments...]
 
-VERSION:
-   0.2.0
-
-COMMANDS:
-   server	socket server. listen to unix socket and update local git repository accordingly
-   setup	help setting up the post-checkout hook in the current repository folder. depends on vi
-   help, h	Shows a list of commands or help for one command
-
-GLOBAL OPTIONS:
-   --help, -h		show help
-   --version, -v	print the version
+OPTIONS:
+   --remote, -r "origin"		name of remote repository
+   --branch, -b "master"		branch of remote repository
+   --socket, -s "./githook.sock"	path to socket to listen for connection
 ```
+
+
+### Setup Help
+
+Command:
+```
+githook setup
+```
+
+This command helps setup the post-checkout script file with vi.
+Just a time-saver in case you don't want to read all about git hook.
+
+The script created will be run whenever `git checkout` is run. It will
+be triggered after each time `githook server` is triggered.
+
+Note that this command only works if you run it inside a git repository.
+
 
 ## License
 
