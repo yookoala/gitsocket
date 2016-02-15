@@ -26,23 +26,22 @@ go build
 
 ```
 NAME:
-   githook - on socket connection, update files from git
+   githook - helps update local git repository on triggers
 
 USAGE:
    githook [global options] command [command options] [arguments...]
 
 VERSION:
-   0.1.0
+   0.2.0
 
 COMMANDS:
+   server	socket server. listen to unix socket and update local git repository accordingly
+   setup	help setting up the post-checkout hook in the current repository folder. depends on vi
    help, h	Shows a list of commands or help for one command
 
 GLOBAL OPTIONS:
-   --remote, -r "origin"		name of remote repository
-   --branch, -b "master"		branch of remote repository
-   --socket, -s "./githook.sock"	path to socket to listen for connection
-   --help, -h				show help
-   --version, -v			print the version
+   --help, -h		show help
+   --version, -v	print the version
 ```
 
 ## License

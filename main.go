@@ -8,6 +8,8 @@ import (
 	"os"
 	"os/exec"
 	"os/signal"
+	"path"
+	"strings"
 
 	"github.com/codegangsta/cli"
 )
@@ -37,6 +39,13 @@ func gitCheckOut(src gitSource) error {
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stdout
 	return cmd.Run()
+}
+
+func gitRootPath() (rootPath string, err error) {
+	cmd := exec.Command("git", "rev-parse", "--show-toplevel")
+	out, err := cmd.CombinedOutput()
+	rootPath = strings.Trim(string(out), "\n")
+	return
 }
 
 func handleShutdown(l net.Listener) {
@@ -108,12 +117,47 @@ func actionHook(c *cli.Context) {
 	}
 }
 
+func actionSetup(c *cli.Context) {
+	rootPath, err := gitRootPath()
+	if err != nil {
+		log.Fatalf("error: %s", rootPath)
+	}
+	filename := path.Join(rootPath, ".git/hooks/post-checkout")
+
+	// if file not exists, create the file
+	if _, err := os.Stat(filename); os.IsNotExist(err) {
+		log.Printf("file not exists")
+		f, err := os.Create(filename)
+		if err != nil {
+			log.Fatalf("error: %s", err)
+			return
+		}
+		fmt.Fprintf(f, "#!/bin/sh\n")
+		fmt.Fprintf(f, "#\n")
+		fmt.Fprintf(f, "# An example hook script to prepare a packed repository for use over\n")
+		fmt.Fprintf(f, "# dumb transports.\n")
+		fmt.Fprintf(f, "#\n")
+		fmt.Fprintf(f, "# To enable this hook, rename this file to \"post-checkout\".\n")
+		fmt.Fprintf(f, "exec echo \"checkout completed.\"\n")
+		f.Close()
+
+		os.Chmod(filename, 0777)
+	}
+
+	cmd := exec.Command("vi", filename)
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stdout
+	if err := cmd.Run(); err != nil {
+		log.Fatalf("error: %s", err)
+	}
+}
+
 func main() {
 
 	app := cli.NewApp()
 	app.Name = "githook"
 	app.Usage = "helps update local git repository on triggers"
-	app.Version = "0.1.0"
+	app.Version = "0.2.0"
 	app.Commands = []cli.Command{
 		{
 			Name: "server",
@@ -137,6 +181,12 @@ func main() {
 				},
 			},
 			Action: actionHook,
+		},
+		{
+			Name: "setup",
+			Usage: "help setting up the post-checkout hook in the current " +
+				"repository folder. depends on vi",
+			Action: actionSetup,
 		},
 	}
 
