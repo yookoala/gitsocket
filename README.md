@@ -1,18 +1,27 @@
 githook
 ======
 
-**githook** is a lightweight server process that listen to a socket
+**githook** is a command line tool to help auto deploy with git.
+
+It can start a lightweight server process that listen to a socket
 request and triggers the command `git fetch [remote source]` and
-`git rebase [remote source]/[branch]`.
+`git checkout [remote source]/[branch]`.
 
-With proper git hook setup, it should helps triggering auto deploy.
+It also help you to setup git hook so you can run command after
+any triggered git checkout.
 
-**githook** is written in [golang][golang].
+**githook** is written in [golang][golang]. It has only been tested
+and used on Linux. However, any POSIX environment (e.g. Mac OSX)
+with [git][git] and [vi][vi] installed should be fine.
 
 [golang]: https://golang.org
+[git]: https://git-scm.com/
+[vi]: http://www.vim.org
 
 
-## Build and Install
+## Install
+
+### Manually Compile and Install
 
 You need to install [golang][golang] first.
 
@@ -22,14 +31,26 @@ Go into the folder. Build with this command:
 go build
 ```
 
+Just move it to any folder in your `$PATH`.
+
+### Install with `go get`
+
+If you have properly install `golang`, setup `$PATH` to include
+`$GOPATH/bin`, you may just use `go get` to install:
+
+```bash
+go get github.com/yookoala/githook
+```
+
+
 ## Usage
 
 The tool supports 2 commands:
 
-### Socket Server
+### A. Socket Server
 
 Command:
-```
+```bash
 githook server
 ```
 This command creates a unix socket server. It updates the local git
@@ -53,10 +74,10 @@ OPTIONS:
 ```
 
 
-### Setup Help
+### B. Setup Helper
 
 Command:
-```
+```bash
 githook setup
 ```
 
@@ -67,6 +88,15 @@ The script created will be run whenever `git checkout` is run. It will
 be triggered after each time `githook server` is triggered.
 
 Note that this command only works if you run it inside a git repository.
+
+
+## Report Bug
+
+You are welcomed to report issue of this software.
+
+Please use our [issue tracker][issues] to report problem.
+
+[issues]: https://github.com/yookoala/githook/issues
 
 
 ## License
