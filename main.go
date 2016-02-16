@@ -6,47 +6,10 @@ import (
 	"log"
 	"net"
 	"os"
-	"os/exec"
 	"os/signal"
-	"path"
-	"strings"
 
 	"github.com/codegangsta/cli"
 )
-
-func init() {
-
-}
-
-type gitSource struct {
-	Name   string
-	Branch string
-}
-
-func (src gitSource) String() string {
-	return src.Name + "/" + src.Branch
-}
-
-func gitFetch(src gitSource) error {
-	cmd := exec.Command("git", "fetch", src.Name, src.Branch)
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stdout
-	return cmd.Run()
-}
-
-func gitCheckOut(src gitSource) error {
-	cmd := exec.Command("git", "checkout", src.String())
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stdout
-	return cmd.Run()
-}
-
-func gitRootPath() (rootPath string, err error) {
-	cmd := exec.Command("git", "rev-parse", "--show-toplevel")
-	out, err := cmd.CombinedOutput()
-	rootPath = strings.Trim(string(out), "\n")
-	return
-}
 
 func handleShutdown(l net.Listener) {
 	c := make(chan os.Signal, 1)
@@ -84,71 +47,6 @@ func handleConnection(conn net.Conn, fn func() error) {
 		if err := fn(); err != nil {
 			log.Printf("callback error: %s", err.Error())
 		}
-	}
-}
-
-func actionHook(c *cli.Context) {
-	l, err := net.Listen("unix", c.String("socket"))
-	if err != nil {
-		panic(err)
-	}
-
-	// cleanly disconnect the socket
-	go handleShutdown(l)
-
-	// define git source to update from
-	src := gitSource{c.String("remote"), c.String("branch")}
-
-	for {
-		conn, err := l.Accept()
-		if err != nil {
-			panic(err)
-		}
-
-		go handleConnection(conn, func() error {
-			if err := gitFetch(src); err != nil {
-				return err
-			}
-			if err := gitCheckOut(src); err != nil {
-				return err
-			}
-			return nil
-		})
-	}
-}
-
-func actionSetup(c *cli.Context) {
-	rootPath, err := gitRootPath()
-	if err != nil {
-		log.Fatalf("error: %s", rootPath)
-	}
-	filename := path.Join(rootPath, ".git/hooks/post-checkout")
-
-	// if file not exists, create the file
-	if _, err := os.Stat(filename); os.IsNotExist(err) {
-		log.Printf("file not exists")
-		f, err := os.Create(filename)
-		if err != nil {
-			log.Fatalf("error: %s", err)
-			return
-		}
-		fmt.Fprintf(f, "#!/bin/sh\n")
-		fmt.Fprintf(f, "#\n")
-		fmt.Fprintf(f, "# An example hook script to prepare a packed repository for use over\n")
-		fmt.Fprintf(f, "# dumb transports.\n")
-		fmt.Fprintf(f, "#\n")
-		fmt.Fprintf(f, "# To enable this hook, rename this file to \"post-checkout\".\n")
-		fmt.Fprintf(f, "exec echo \"checkout completed.\"\n")
-		f.Close()
-
-		os.Chmod(filename, 0777)
-	}
-
-	cmd := exec.Command("vi", filename)
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stdout
-	if err := cmd.Run(); err != nil {
-		log.Fatalf("error: %s", err)
 	}
 }
 
