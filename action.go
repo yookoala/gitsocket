@@ -7,12 +7,32 @@ import (
 	"os"
 	"os/exec"
 	"path"
+	"regexp"
 
 	"github.com/codegangsta/cli"
 )
 
+// address returns networkk and address that fits
+// the use of either net.Dial or net.Listen
+func address(listen string) (network, address string) {
+	reIP := regexp.MustCompile("^(\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3})\\:(\\d{2,5}$)")
+	rePort := regexp.MustCompile("^(\\d+)$")
+	switch {
+	case reIP.MatchString(listen):
+		network = "tcp"
+		address = listen
+	case rePort.MatchString(listen):
+		network = "tcp"
+		address = ":" + listen
+	default:
+		network = "unix"
+		address = listen
+	}
+	return
+}
+
 func actionHook(c *cli.Context) {
-	l, err := net.Listen("unix", c.String("socket"))
+	l, err := net.Listen(address(c.String("listen")))
 	if err != nil {
 		panic(err)
 	}

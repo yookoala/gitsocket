@@ -55,7 +55,7 @@ func main() {
 	app := cli.NewApp()
 	app.Name = "githook"
 	app.Usage = "helps update local git repository on triggers"
-	app.Version = "0.2.0"
+	app.Version = "0.3.0"
 	app.Commands = []cli.Command{
 		{
 			Name: "server",
@@ -73,7 +73,7 @@ func main() {
 					Usage: "branch of remote repository",
 				},
 				cli.StringFlag{
-					Name:  "socket, s",
+					Name:  "listen, l",
 					Value: "./githook.sock",
 					Usage: "path to socket to listen for connection",
 				},
