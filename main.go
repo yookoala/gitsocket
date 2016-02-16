@@ -1,59 +1,10 @@
 package main
 
 import (
-	"fmt"
-	"io"
-	"log"
-	"net"
 	"os"
-	"os/signal"
 
 	"github.com/codegangsta/cli"
 )
-
-func handleShutdown(l net.Listener) {
-	c := make(chan os.Signal, 1)
-	signal.Notify(c, os.Interrupt)
-
-	for {
-		select {
-		case <-c:
-			l.Close()
-			os.Exit(0)
-		}
-	}
-}
-
-type commandFn func(stdout, stderr io.Writer) error
-
-func handleConnection(conn net.Conn, fn commandFn) {
-	log.Printf("server: handleConnection")
-	for {
-		bufbytes := make([]byte, 1024)
-		nr, err := conn.Read(bufbytes)
-
-		// handle error
-		if err == io.EOF {
-			log.Printf("server: client connect closed")
-			return
-		} else if err != nil {
-			log.Printf("server read error: %#v", err.Error())
-			return
-		}
-
-		data := bufbytes[0:nr]
-		fmt.Fprintf(conn, "echo: ")
-		conn.Write(data)
-		log.Printf("server got: %s", data)
-
-		// TODO: allow overriding Stdout with log output
-		w := io.MultiWriter(conn, os.Stdout)
-
-		if err := fn(w, w); err != nil {
-			log.Printf("callback error: %s", err.Error())
-		}
-	}
-}
 
 func main() {
 
