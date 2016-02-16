@@ -50,14 +50,11 @@ func actionHook(c *cli.Context) {
 			panic(err)
 		}
 
-		go handleConnection(conn, func(conn net.Conn) error {
-			// TODO: allow overriding Stdout with log output
-			w := io.MultiWriter(conn, os.Stdout)
-
-			if err := gitFetch(src, w, w); err != nil {
+		go handleConnection(conn, func(stdout, stderr io.Writer) error {
+			if err := gitFetch(src, stdout, stderr); err != nil {
 				return err
 			}
-			if err := gitCheckOut(src, w, w); err != nil {
+			if err := gitCheckOut(src, stdout, stderr); err != nil {
 				return err
 			}
 			return nil

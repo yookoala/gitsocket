@@ -24,7 +24,9 @@ func handleShutdown(l net.Listener) {
 	}
 }
 
-func handleConnection(conn net.Conn, fn func(conn net.Conn) error) {
+type commandFn func(stdout, stderr io.Writer) error
+
+func handleConnection(conn net.Conn, fn commandFn) {
 	log.Printf("server: handleConnection")
 	for {
 		bufbytes := make([]byte, 1024)
@@ -44,7 +46,10 @@ func handleConnection(conn net.Conn, fn func(conn net.Conn) error) {
 		conn.Write(data)
 		log.Printf("server got: %s", data)
 
-		if err := fn(conn); err != nil {
+		// TODO: allow overriding Stdout with log output
+		w := io.MultiWriter(conn, os.Stdout)
+
+		if err := fn(w, w); err != nil {
 			log.Printf("callback error: %s", err.Error())
 		}
 	}
