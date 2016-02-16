@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"io"
 	"log"
 	"net"
 	"os"
@@ -49,11 +50,14 @@ func actionHook(c *cli.Context) {
 			panic(err)
 		}
 
-		go handleConnection(conn, func() error {
-			if err := gitFetch(src); err != nil {
+		go handleConnection(conn, func(conn net.Conn) error {
+			// TODO: allow overriding Stdout with log output
+			w := io.MultiWriter(conn, os.Stdout)
+
+			if err := gitFetch(src, w, w); err != nil {
 				return err
 			}
-			if err := gitCheckOut(src); err != nil {
+			if err := gitCheckOut(src, w, w); err != nil {
 				return err
 			}
 			return nil

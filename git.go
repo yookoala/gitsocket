@@ -1,7 +1,7 @@
 package main
 
 import (
-	"os"
+	"io"
 	"os/exec"
 	"strings"
 )
@@ -15,17 +15,17 @@ func (src gitSource) String() string {
 	return src.Name + "/" + src.Branch
 }
 
-func gitFetch(src gitSource) error {
+func gitFetch(src gitSource, stdout, stderr io.Writer) error {
 	cmd := exec.Command("git", "fetch", src.Name, src.Branch)
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stdout
+	cmd.Stdout = stdout
+	cmd.Stderr = stderr
 	return cmd.Run()
 }
 
-func gitCheckOut(src gitSource) error {
+func gitCheckOut(src gitSource, stdout, stderr io.Writer) error {
 	cmd := exec.Command("git", "checkout", src.String())
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stdout
+	cmd.Stdout = stdout
+	cmd.Stderr = stderr
 	return cmd.Run()
 }
 

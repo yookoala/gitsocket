@@ -24,7 +24,7 @@ func handleShutdown(l net.Listener) {
 	}
 }
 
-func handleConnection(conn net.Conn, fn func() error) {
+func handleConnection(conn net.Conn, fn func(conn net.Conn) error) {
 	log.Printf("server: handleConnection")
 	for {
 		bufbytes := make([]byte, 1024)
@@ -44,7 +44,7 @@ func handleConnection(conn net.Conn, fn func() error) {
 		conn.Write(data)
 		log.Printf("server got: %s", data)
 
-		if err := fn(); err != nil {
+		if err := fn(conn); err != nil {
 			log.Printf("callback error: %s", err.Error())
 		}
 	}
