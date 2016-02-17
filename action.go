@@ -11,13 +11,18 @@ import (
 	"os/signal"
 	"path"
 	"regexp"
+	"syscall"
 
 	"github.com/codegangsta/cli"
 )
 
 func handleShutdown(l net.Listener, pidfile string) {
 	c := make(chan os.Signal, 1)
-	signal.Notify(c, os.Interrupt)
+	signal.Notify(c,
+		os.Interrupt,
+		syscall.SIGTERM,
+		syscall.SIGQUIT,
+		syscall.SIGKILL)
 
 	for {
 		select {
