@@ -31,6 +31,8 @@ type commandFn func(stdout, stderr io.Writer) error
 
 func handleConnection(conn net.Conn, fn commandFn) {
 	log.Printf("server: handleConnection")
+	defer conn.Close()
+
 	for {
 		bufbytes := make([]byte, 1024)
 		nr, err := conn.Read(bufbytes)
@@ -52,8 +54,12 @@ func handleConnection(conn net.Conn, fn commandFn) {
 		// TODO: allow overriding Stdout with log output
 		w := io.MultiWriter(conn, os.Stdout)
 
-		if err := fn(w, w); err != nil {
+		if err := fn(w, w); err == io.EOF {
+			log.Printf("server: connection terminated")
+			return
+		} else if err != nil {
 			log.Printf("callback error: %s", err.Error())
+			return
 		}
 	}
 }
@@ -102,7 +108,7 @@ func actionHook(c *cli.Context) {
 			if err := gitCheckOut(src, stdout, stderr); err != nil {
 				return err
 			}
-			return nil
+			return io.EOF
 		})
 	}
 }
