@@ -37,6 +37,18 @@ func main() {
 			Action: actionHook,
 		},
 		{
+			Name:  "client",
+			Usage: "connects to socket triggers the socket server then returns the output",
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:  "conn, c",
+					Value: "./githook.sock",
+					Usage: "socket or address to connect",
+				},
+			},
+			Action: actionClient,
+		},
+		{
 			Name: "setup",
 			Usage: "help setting up the post-checkout hook in the current " +
 				"repository folder. depends on vi",

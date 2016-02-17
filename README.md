@@ -74,6 +74,23 @@ OPTIONS:
    --socket, -s "./githook.sock"	path to socket to listen for connection
 ```
 
+Command:
+```bash
+githook client
+```
+This command connects to the githook server and trigger one git checkout
+
+```manpage
+NAME:
+   client - connects to socket triggers the socket server then returns the output
+
+USAGE:
+   command client [command options] [arguments...]
+
+OPTIONS:
+   --conn, -c "./githook.sock"	socket or address to connect
+```
+
 
 ### B. Setup Helper
 

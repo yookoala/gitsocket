@@ -113,6 +113,33 @@ func actionHook(c *cli.Context) {
 	}
 }
 
+func actionClient(c *cli.Context) {
+	conn, err := net.Dial(address(c.String("conn")))
+	if err != nil {
+		log.Fatalf("connection error: %s", err.Error())
+		return
+	}
+
+	conn.Write([]byte("hello\n"))
+
+	bufbytes := make([]byte, 1024)
+	for {
+		nr, err := conn.Read(bufbytes)
+
+		// handle error
+		if err == io.EOF {
+			log.Printf("client: server connect closed")
+			return
+		} else if err != nil {
+			log.Printf("client read error: %#v", err.Error())
+			return
+		}
+
+		data := bufbytes[0:nr]
+		fmt.Printf("%s", data)
+	}
+}
+
 func actionSetup(c *cli.Context) {
 	rootPath, err := gitRootPath()
 	if err != nil {
