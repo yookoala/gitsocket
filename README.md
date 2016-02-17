@@ -92,7 +92,6 @@ OPTIONS:
    --conn, -c "./githook.sock"	socket or address to connect
 ```
 
-
 ### B. Setup Helper
 
 Command:
@@ -106,7 +105,18 @@ Just a time-saver in case you don't want to read all about git hook.
 The script created will be run whenever `git checkout` is run. It will
 be triggered after each time `githook server` is triggered.
 
-Note that this command only works if you run it inside a git repository.
+```manpage
+NAME:
+   setup - help setting up the post-checkout hook in the current repository folder. depends on vi
+
+USAGE:
+   command setup [command options] [arguments...]
+
+OPTIONS:
+   --command, -c 	Use shell command to be run in post-checkout hook. By default it starts vi to edit it. If the file exists, it fails (unless you have -f flag).
+   --force, -f		Overwrites the current file with -c flag set. Default not set
+```
+
 
 
 ## Report Bug

@@ -194,6 +194,21 @@ func actionSetup(c *cli.Context) {
 	}
 	filename := path.Join(rootPath, ".git/hooks/post-checkout")
 
+	if command := c.String("command"); command != "" {
+		// if file not exists, create the file
+		if _, err := os.Stat(filename); os.IsNotExist(err) {
+			createHookScript(filename, command)
+			return
+		} else if c.Bool("force") {
+			createHookScript(filename, command)
+			return
+		}
+		fmt.Println("post-checkout script already exists. If you want to " +
+			"overwrite, please use the -f flag")
+		os.Exit(1)
+		return
+	}
+
 	// if file not exists, create the file
 	if _, err := os.Stat(filename); os.IsNotExist(err) {
 		createHookScript(filename, "exec echo \"checkout completed.\"\n")

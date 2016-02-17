@@ -57,6 +57,19 @@ func main() {
 			Name: "setup",
 			Usage: "help setting up the post-checkout hook in the current " +
 				"repository folder. depends on vi",
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:  "command, c",
+					Value: "",
+					Usage: "Use shell command to be run in post-checkout hook. By " +
+						"default it starts vi to edit it. If the file exists, it fails " +
+						"(unless you have -f flag).",
+				},
+				cli.BoolFlag{
+					Name:  "force, f",
+					Usage: "Overwrites the current file with -c flag set. Default not set",
+				},
+			},
 			Action: actionSetup,
 		},
 	}
