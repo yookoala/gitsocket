@@ -28,6 +28,7 @@ You need to install [golang][golang] first.
 Go into the folder. Build with this command:
 
 ```bash
+go get github.com/codegangsta/cli
 go build
 ```
 
