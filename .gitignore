@@ -1,1 +1,5 @@
+# build binary
 githook
+
+# test folder
+_test
