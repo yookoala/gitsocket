@@ -12,6 +12,7 @@ import (
 	"path"
 	"regexp"
 	"syscall"
+	"text/template"
 
 	"github.com/codegangsta/cli"
 )
@@ -157,6 +158,35 @@ func actionClient(c *cli.Context) {
 	}
 }
 
+func createHookScript(filename, command string) (err error) {
+
+	// template for git hook script
+	tpl := template.Must(template.New("githook").Parse(`#!/bin/sh
+#
+# An example hook script to prepare a packed repository for use over
+# dumb transports.
+#
+# To enable this hook, rename this file to "post-checkout".
+{{ .Command }}
+`))
+
+	f, err := os.Create(filename)
+	if err != nil {
+		log.Fatalf("error: %s", err)
+		return
+	}
+	err = tpl.Execute(f, map[string]interface{}{
+		"Command": command,
+	})
+	f.Close()
+	if err != nil {
+		return
+	}
+
+	err = os.Chmod(filename, 0777)
+	return
+}
+
 func actionSetup(c *cli.Context) {
 	rootPath, err := gitRootPath()
 	if err != nil {
@@ -166,22 +196,7 @@ func actionSetup(c *cli.Context) {
 
 	// if file not exists, create the file
 	if _, err := os.Stat(filename); os.IsNotExist(err) {
-		log.Printf("file not exists")
-		f, err := os.Create(filename)
-		if err != nil {
-			log.Fatalf("error: %s", err)
-			return
-		}
-		fmt.Fprintf(f, "#!/bin/sh\n")
-		fmt.Fprintf(f, "#\n")
-		fmt.Fprintf(f, "# An example hook script to prepare a packed repository for use over\n")
-		fmt.Fprintf(f, "# dumb transports.\n")
-		fmt.Fprintf(f, "#\n")
-		fmt.Fprintf(f, "# To enable this hook, rename this file to \"post-checkout\".\n")
-		fmt.Fprintf(f, "exec echo \"checkout completed.\"\n")
-		f.Close()
-
-		os.Chmod(filename, 0777)
+		createHookScript(filename, "exec echo \"checkout completed.\"\n")
 	}
 
 	cmd := exec.Command("vi", filename)
