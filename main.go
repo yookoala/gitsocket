@@ -33,6 +33,11 @@ func main() {
 					Value: "./githook.sock",
 					Usage: "path to socket to listen for connection",
 				},
+				cli.StringFlag{
+					Name:  "pidfile, p",
+					Value: "",
+					Usage: "path to pidfile. empty for no pidfile",
+				},
 			},
 			Action: actionHook,
 		},

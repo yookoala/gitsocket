@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"io"
+	"io/ioutil"
 	"log"
 	"net"
 	"os"
@@ -14,7 +15,7 @@ import (
 	"github.com/codegangsta/cli"
 )
 
-func handleShutdown(l net.Listener) {
+func handleShutdown(l net.Listener, pidfile string) {
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt)
 
@@ -22,6 +23,9 @@ func handleShutdown(l net.Listener) {
 		select {
 		case <-c:
 			l.Close()
+			if pidfile != "" {
+				os.Remove(pidfile)
+			}
 			os.Exit(0)
 		}
 	}
@@ -89,8 +93,16 @@ func actionHook(c *cli.Context) {
 		panic(err)
 	}
 
+	pidfile := c.String("pidfile")
+
 	// cleanly disconnect the socket
-	go handleShutdown(l)
+	go handleShutdown(l, pidfile)
+
+	if pidfile != "" {
+		// get current pid and write to file
+		pid := fmt.Sprintf("%d", os.Getpid())
+		ioutil.WriteFile(pidfile, []byte(pid), 0600)
+	}
 
 	// define git source to update from
 	src := gitSource{c.String("remote"), c.String("branch")}
