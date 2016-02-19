@@ -44,7 +44,21 @@ test-test-result:
 	cd _test/local && git status | head -1 > status.txt
 	cd _test/local && if ! grep "HEAD detached at origin/master" status.txt; then make test-stop-gitsocket; exit 1 ; fi
 
-test: test-socket test-port test-ip-port
+test: test-default test-socket test-port test-ip-port
+
+test-default:
+	@echo
+	@echo "Functional Tests (default)"
+	@echo "--------------------------"
+	@echo
+	@make test-repo
+	gitsocket server --daemon --gitrepo "_test/local" --pidfile "test.pid"
+	gitsocket client
+	@make test-test-result
+	@make test-stop-gitsocket
+	@echo
+	@echo "Test Passed"
+	@echo
 
 test-socket:
 	@echo
@@ -52,8 +66,8 @@ test-socket:
 	@echo "-------------------------"
 	@echo
 	@make test-repo
-	gitsocket server --daemon --gitrepo "_test/local" --pidfile "test.pid"
-	gitsocket client
+	gitsocket server --daemon --gitrepo "_test/local" --listen "_test/test.sock" --pidfile "test.pid"
+	gitsocket client --conn "_test/test.sock"
 	@make test-test-result
 	@make test-stop-gitsocket
 	@echo
