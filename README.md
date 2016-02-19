@@ -72,8 +72,8 @@ OPTIONS:
    --remote, -r "origin"		name of remote repository
    --branch, -b "master"		branch of remote repository
    --listen, -l "./githook.sock"	path to socket to listen for connection
-   --pidfile, -p "./githook.pid"	path to pidfile. empty for no pidfile
-```
+   --pidfile, -p 			path to pidfile. empty for no pidfile
+   --output, -o 			log output of server. empty for displaying on stdout
 
 Command:
 ```bash

@@ -39,7 +39,7 @@ func handleShutdown(l net.Listener, pidfile string) {
 
 type commandFn func(stdout, stderr io.Writer) error
 
-func handleConnection(conn net.Conn, fn commandFn) {
+func handleConnection(conn net.Conn, stdout, stderr io.Writer, fn commandFn) {
 	log.Printf("server: handleConnection")
 	defer conn.Close()
 
@@ -61,10 +61,10 @@ func handleConnection(conn net.Conn, fn commandFn) {
 		conn.Write(data)
 		log.Printf("server got: %s", data)
 
-		// TODO: allow overriding Stdout with log output
-		w := io.MultiWriter(conn, os.Stdout)
+		rw := io.MultiWriter(conn, stdout)
+		ew := io.MultiWriter(conn, stderr)
 
-		if err := fn(w, w); err == io.EOF {
+		if err := fn(rw, ew); err == io.EOF {
 			log.Printf("server: connection terminated")
 			return
 		} else if err != nil {
@@ -94,21 +94,36 @@ func address(listen string) (network, address string) {
 }
 
 func actionHook(c *cli.Context) {
+
+	var stdout io.Writer = os.Stdout
+	var stderr io.Writer = os.Stderr
+	if output := c.String("output"); output != "" {
+		var f *os.File
+		var err error
+		if f, err = os.Create(output); err != nil {
+			log.Fatalf("error opening output logfile %#v: %s",
+				output, err.Error())
+			return
+		}
+		stdout = f
+		stderr = f
+		log.SetOutput(f)
+	}
+
 	l, err := net.Listen(address(c.String("listen")))
 	if err != nil {
-		panic(err)
+		log.Fatalf("error: %s", err)
 	}
 
 	pidfile := c.String("pidfile")
-
-	// cleanly disconnect the socket
-	go handleShutdown(l, pidfile)
-
 	if pidfile != "" {
 		// get current pid and write to file
 		pid := fmt.Sprintf("%d", os.Getpid())
 		ioutil.WriteFile(pidfile, []byte(pid), 0600)
 	}
+
+	// cleanly disconnect the socket
+	go handleShutdown(l, pidfile)
 
 	// define git source to update from
 	src := gitSource{c.String("remote"), c.String("branch")}
@@ -119,7 +134,7 @@ func actionHook(c *cli.Context) {
 			panic(err)
 		}
 
-		go handleConnection(conn, func(stdout, stderr io.Writer) error {
+		go handleConnection(conn, stdout, stderr, func(stdout, stderr io.Writer) error {
 			if err := gitFetch(src, stdout, stderr); err != nil {
 				return err
 			}

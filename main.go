@@ -38,6 +38,11 @@ func main() {
 					Value: "",
 					Usage: "path to pidfile. empty for no pidfile",
 				},
+				cli.StringFlag{
+					Name:  "output, o",
+					Value: "",
+					Usage: "log output of server. empty for displaying on stdout",
+				},
 			},
 			Action: actionHook,
 		},
