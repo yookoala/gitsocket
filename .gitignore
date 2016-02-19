@@ -3,3 +3,6 @@ gitsocket
 
 # test folder
 _test
+
+# vim temp files
+*.swp
