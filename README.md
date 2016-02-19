@@ -46,7 +46,7 @@ go get github.com/yookoala/githook
 
 ## Usage
 
-The tool supports 2 commands:
+The tool supports 4 commands:
 
 ### A. Socket Server
 
@@ -75,6 +75,30 @@ OPTIONS:
    --pidfile, -p 			path to pidfile. empty for no pidfile
    --output, -o 			log output of server. empty for displaying on stdout
    --daemon, -d				run server as daemon. will discard all output unless you have output flag set.```
+```
+
+### B. Run Once
+
+Command:
+```bash
+githook once
+```
+This command run as the server is triggered once
+
+```manpage
+NAME:
+   once - run as the server is triggered once
+
+USAGE:
+   command once [command options] [arguments...]
+
+OPTIONS:
+   --remote, -r "origin"	name of remote repository
+   --branch, -b "master"	branch of remote repository
+   --output, -o 		log output of server. empty for displaying on stdout
+```
+
+### C. Client
 
 Command:
 ```bash
@@ -93,7 +117,7 @@ OPTIONS:
    --conn, -c "./githook.sock"	socket or address to connect
 ```
 
-### B. Setup Helper
+### D. Setup Helper
 
 Command:
 ```bash
@@ -117,7 +141,6 @@ OPTIONS:
    --command, -c 	Use shell command to be run in post-checkout hook. By default it starts vi to edit it. If the file exists, it fails (unless you have -f flag).
    --force, -f		Overwrites the current file with -c flag set. Default not set
 ```
-
 
 
 ## Report Bug
