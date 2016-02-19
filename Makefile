@@ -104,4 +104,4 @@ test-ip-port:
 
 .PHONY: all build clean test
 .PHONY: test-repo test-start-gitsocket test-stop-gitsocket test-test-result
-.PHONY: test-socket test-port
+.PHONY: test-default test-socket test-port test-ip-port
