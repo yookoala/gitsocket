@@ -156,6 +156,32 @@ func actionServerMain(c *cli.Context) {
 	}
 }
 
+func actionOnce(c *cli.Context) {
+
+	var stdout io.Writer = os.Stdout
+	var stderr io.Writer = os.Stderr
+	if output := c.String("output"); output != "" {
+		var f *os.File
+		var err error
+		if f, err = os.Create(output); err != nil {
+			log.Fatalf("error opening output logfile %#v: %s",
+				output, err.Error())
+			return
+		}
+		stdout = f
+		stderr = f
+		log.SetOutput(f)
+	}
+
+	// define git source to update from
+	src := gitSource{c.String("remote"), c.String("branch")}
+
+	err := gitActionsFor(src)(stdout, stderr)
+	if err != nil {
+		log.Fatalf("error: %s", err.Error())
+	}
+}
+
 func actionClient(c *cli.Context) {
 	conn, err := net.Dial(address(c.String("conn")))
 	if err != nil {

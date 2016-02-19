@@ -51,6 +51,28 @@ func main() {
 			Action: actionServer,
 		},
 		{
+			Name:  "once",
+			Usage: "run as the server is triggered once",
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:  "remote, r",
+					Value: "origin",
+					Usage: "name of remote repository",
+				},
+				cli.StringFlag{
+					Name:  "branch, b",
+					Value: "master",
+					Usage: "branch of remote repository",
+				},
+				cli.StringFlag{
+					Name:  "output, o",
+					Value: "",
+					Usage: "log output of server. empty for displaying on stdout",
+				},
+			},
+			Action: actionServer,
+		},
+		{
 			Name:  "client",
 			Usage: "connects to socket triggers the socket server then returns the output",
 			Flags: []cli.Flag{
