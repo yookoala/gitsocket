@@ -1,18 +1,18 @@
 export PATH:=$(PWD):$(PATH)
 
-build: githook
+build: gitsocket
 
 all: clean build test
 
 clean:
-	rm -f githook
+	rm -f gitsocket
 
-githook:
+gitsocket:
 	@echo
-	@echo "Building githook"
-	@echo "----------------"
+	@echo "Building gitsocket"
+	@echo "------------------"
 	@echo
-	go build -o githook
+	go build -o gitsocket
 
 test-repo:
 	@echo
@@ -34,10 +34,10 @@ test-repo:
 	cd _test/local && git remote add origin ../remote
 	cd _test/local && git push -u origin master
 
-test-start-githook:
-	cd _test/local && githook server --pidfile "test.pid" &
+test-start-gitsocket:
+	cd _test/local && gitsocket server --pidfile "test.pid" &
 
-test-stop-githook:
+test-stop-gitsocket:
 	cd _test/local && kill `cat "test.pid"`
 
 test: test-repo
@@ -46,12 +46,12 @@ test: test-repo
 	@echo "----------------"
 	@echo
 	##
-	## start githook on local
-	make test-start-githook
+	## start gitsocket on local
+	make test-start-gitsocket
 	##
-	## trigger the githook
+	## trigger the gitsocket
 	cd _test/local && ls
-	cd _test/local && githook client > /dev/null
+	cd _test/local && gitsocket client > /dev/null
 	##
 	## verify the checkout
 	sleep 1
@@ -62,13 +62,13 @@ test: test-repo
 	##
 	## test if the git status is HEAD on origin/master
 	cd _test/local && git status | head -1 > status.txt
-	cd _test/local && if ! grep "HEAD detached at origin/master" status.txt; then make test-stop-githook; exit 1 ; fi
+	cd _test/local && if ! grep "HEAD detached at origin/master" status.txt; then make test-stop-gitsocket; exit 1 ; fi
 	##
-	## end githook
-	make test-stop-githook
+	## end gitsocket
+	make test-stop-gitsocket
 	@echo
 	@echo "Test Passed"
 	@echo
 
 .PHONY: all build clean test
-.PHONY: test-repo test-start-githook test-stop-githook
+.PHONY: test-repo test-start-gitsocket test-stop-gitsocket

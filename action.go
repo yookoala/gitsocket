@@ -212,7 +212,7 @@ func actionClient(c *cli.Context) {
 func createHookScript(filename, command string) (err error) {
 
 	// template for git hook script
-	tpl := template.Must(template.New("githook").Parse(`#!/bin/sh
+	tpl := template.Must(template.New("gitsocket").Parse(`#!/bin/sh
 #
 # An example hook script to prepare a packed repository for use over
 # dumb transports.

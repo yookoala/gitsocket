@@ -9,7 +9,7 @@ import (
 func main() {
 
 	app := cli.NewApp()
-	app.Name = "githook"
+	app.Name = "gitsocket"
 	app.Usage = "helps update local git repository on triggers"
 	app.Version = "0.3.0"
 	app.Commands = []cli.Command{
@@ -30,7 +30,7 @@ func main() {
 				},
 				cli.StringFlag{
 					Name:  "listen, l",
-					Value: "./githook.sock",
+					Value: "./gitsocket.sock",
 					Usage: "path to socket to listen for connection",
 				},
 				cli.StringFlag{
@@ -78,7 +78,7 @@ func main() {
 			Flags: []cli.Flag{
 				cli.StringFlag{
 					Name:  "conn, c",
-					Value: "./githook.sock",
+					Value: "./gitsocket.sock",
 					Usage: "socket or address to connect",
 				},
 			},

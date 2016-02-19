@@ -16,7 +16,7 @@ func (src gitSource) String() string {
 }
 
 // gitActionsFor returns commandFn to run all the
-// githook relevant git command for the given source src
+// gitsocket relevant git command for the given source src
 func gitActionsFor(src gitSource) commandFn {
 	return func(stdout, stderr io.Writer) (err error) {
 		if err := gitFetch(src, stdout, stderr); err != nil {
