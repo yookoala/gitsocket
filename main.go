@@ -80,7 +80,7 @@ func main() {
 					Usage: "targeting git repository",
 				},
 			},
-			Action: actionServer,
+			Action: actionOnce,
 		},
 		{
 			Name:  "client",

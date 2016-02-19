@@ -190,7 +190,7 @@ func actionOnce(c *cli.Context) {
 	src := gitSource{mustGitRootPath(c.String("gitrepo")),
 		c.String("remote"), c.String("branch")}
 
-	if err := gitActionsFor(src)(stdout, stderr); err != nil {
+	if err := gitActionsFor(src)(stdout, stderr); err != io.EOF {
 		log.Fatalf("error: %s", err.Error())
 	}
 }
