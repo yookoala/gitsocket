@@ -37,71 +37,74 @@ test-repo:
 test-stop-gitsocket:
 	kill `cat "test.pid"`
 
-test-test-result:
+test-server-test-result:
 	sleep 1
 	cd _test/local && ls
 	cd _test/local && if [ -f "OTHER.md" ]; then make test-stop-gitsocket; exit 1; fi
 	cd _test/local && git status | head -1 > status.txt
 	cd _test/local && if ! grep "HEAD detached at origin/master" status.txt; then make test-stop-gitsocket; exit 1 ; fi
 
-test: test-default test-socket test-port test-ip-port
+test: test-server
 
-test-default:
+test-server: test-server-default test-server-socket test-server-port test-server-ip-port
+
+test-server-default:
 	@echo
-	@echo "Functional Tests (default)"
+	@echo "gitsocket server (default)"
 	@echo "--------------------------"
 	@echo
 	@make test-repo
 	gitsocket server --daemon --gitrepo "_test/local" --pidfile "test.pid"
 	gitsocket client
-	@make test-test-result
+	@make test-server-test-result
 	@make test-stop-gitsocket
 	@echo
 	@echo "Test Passed"
 	@echo
 
-test-socket:
+test-server-socket:
 	@echo
-	@echo "Functional Tests (socket)"
+	@echo "gitsocket server (socket)"
 	@echo "-------------------------"
 	@echo
 	@make test-repo
 	gitsocket server --daemon --gitrepo "_test/local" --listen "_test/test.sock" --pidfile "test.pid"
 	gitsocket client --conn "_test/test.sock"
-	@make test-test-result
+	@make test-server-test-result
 	@make test-stop-gitsocket
 	@echo
 	@echo "Test Passed"
 	@echo
 
-test-port:
+test-server-port:
 	@echo
-	@echo "Functional Tests (port)"
+	@echo "gitsocket server (port)"
 	@echo "-----------------------"
 	@echo
 	@make test-repo
 	gitsocket server --daemon --gitrepo "_test/local" --listen 9301 --pidfile "test.pid"
 	gitsocket client --conn 9301
-	@make test-test-result
+	@make test-server-test-result
 	@make test-stop-gitsocket
 	@echo
 	@echo "Test Passed"
 	@echo
 
-test-ip-port:
+test-server-ip-port:
 	@echo
-	@echo "Functional Tests (ip:port)"
+	@echo "gitsocket server (ip:port)"
 	@echo "--------------------------"
 	@echo
 	@make test-repo
 	gitsocket server --daemon --gitrepo "_test/local" --listen 9301 --pidfile "test.pid"
 	gitsocket client --conn 127.0.0.1:9301
-	@make test-test-result
+	@make test-server-test-result
 	@make test-stop-gitsocket
 	@echo
 	@echo "Test Passed"
 	@echo
 
 .PHONY: all build clean test
-.PHONY: test-repo test-start-gitsocket test-stop-gitsocket test-test-result
-.PHONY: test-default test-socket test-port test-ip-port
+.PHONY: test-repo test-start-gitsocket test-stop-gitsocket test-server-test-result
+.PHONY: test-server
+.PHONY: test-server-default test-server-socket test-server-port test-server-ip-port
