@@ -47,6 +47,11 @@ func main() {
 					Name:  "daemon, d",
 					Usage: "run server as daemon. will discard all output unless you have output flag set.",
 				},
+				cli.StringFlag{
+					Name:  "gitrepo, g",
+					Value: "",
+					Usage: "targeting git repository",
+				},
 			},
 			Action: actionServer,
 		},
@@ -68,6 +73,11 @@ func main() {
 					Name:  "output, o",
 					Value: "",
 					Usage: "log output of server. empty for displaying on stdout",
+				},
+				cli.StringFlag{
+					Name:  "gitrepo, g",
+					Value: "",
+					Usage: "targeting git repository",
 				},
 			},
 			Action: actionServer,
@@ -99,6 +109,11 @@ func main() {
 				cli.BoolFlag{
 					Name:  "force, f",
 					Usage: "Overwrites the current file with -c flag set. Default not set",
+				},
+				cli.StringFlag{
+					Name:  "gitrepo, g",
+					Value: "",
+					Usage: "targeting git repository",
 				},
 			},
 			Action: actionSetup,

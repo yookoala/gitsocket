@@ -74,7 +74,8 @@ OPTIONS:
    --listen, -l "./gitsocket.sock"	path to socket to listen for connection
    --pidfile, -p 			path to pidfile. empty for no pidfile
    --output, -o 			log output of server. empty for displaying on stdout
-   --daemon, -d				run server as daemon. will discard all output unless you have output flag set.```
+   --daemon, -d				run server as daemon. will discard all output unless you have output flag set.
+   --gitrepo, -g 			targeting git repository
 ```
 
 ### B. Run Once
@@ -96,6 +97,7 @@ OPTIONS:
    --remote, -r "origin"	name of remote repository
    --branch, -b "master"	branch of remote repository
    --output, -o 		log output of server. empty for displaying on stdout
+   --gitrepo, -g 		targeting git repository
 ```
 
 ### C. Client
@@ -140,6 +142,7 @@ USAGE:
 OPTIONS:
    --command, -c 	Use shell command to be run in post-checkout hook. By default it starts vi to edit it. If the file exists, it fails (unless you have -f flag).
    --force, -f		Overwrites the current file with -c flag set. Default not set
+   --gitrepo, -g 	targeting git repository
 ```
 
 

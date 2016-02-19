@@ -156,7 +156,8 @@ func actionServerMain(c *cli.Context, stdout, stderr io.Writer) {
 	go handleShutdown(l, pidfile)
 
 	// define git source to update from
-	src := gitSource{c.String("remote"), c.String("branch")}
+	src := gitSource{mustGitRootPath(c.String("gitrepo")),
+		c.String("remote"), c.String("branch")}
 
 	for {
 		conn, err := l.Accept()
@@ -186,10 +187,10 @@ func actionOnce(c *cli.Context) {
 	}
 
 	// define git source to update from
-	src := gitSource{c.String("remote"), c.String("branch")}
+	src := gitSource{mustGitRootPath(c.String("gitrepo")),
+		c.String("remote"), c.String("branch")}
 
-	err := gitActionsFor(src)(stdout, stderr)
-	if err != nil {
+	if err := gitActionsFor(src)(stdout, stderr); err != nil {
 		log.Fatalf("error: %s", err.Error())
 	}
 }
@@ -251,10 +252,9 @@ func createHookScript(filename, command string) (err error) {
 }
 
 func actionSetup(c *cli.Context) {
-	rootPath, err := gitRootPath()
-	if err != nil {
-		log.Fatalf("error: %s", rootPath)
-	}
+
+	// define git source to update from
+	rootPath := mustGitRootPath(c.String("gitrepo"))
 	filename := path.Join(rootPath, ".git/hooks/post-checkout")
 
 	if command := c.String("command"); command != "" {

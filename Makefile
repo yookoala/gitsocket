@@ -35,7 +35,7 @@ test-repo:
 	cd _test/local && git push -u origin master
 
 test-stop-gitsocket:
-	cd _test/local && kill `cat "test.pid"`
+	kill `cat "test.pid"`
 
 test: test-socket test-port
 
@@ -47,12 +47,12 @@ test-socket:
 	@echo
 	##
 	## start gitsocket on local
-	cd _test/local && gitsocket server --daemon --pidfile "test.pid"
+	gitsocket server --daemon --gitrepo "_test/local" --pidfile "test.pid"
 	@echo
 	##
 	## trigger the gitsocket
 	cd _test/local && ls
-	cd _test/local && gitsocket client
+	gitsocket client
 	@echo
 	##
 	## verify the checkout
@@ -83,12 +83,12 @@ test-port:
 	@echo
 	##
 	## start gitsocket on local
-	cd _test/local && gitsocket server --daemon --listen 9301 --pidfile "test.pid"
+	gitsocket server --daemon --gitrepo "_test/local" --listen 9301 --pidfile "test.pid"
 	@echo
 	##
 	## trigger the gitsocket
 	cd _test/local && ls
-	cd _test/local && gitsocket client --conn 9301
+	gitsocket client --conn 9301
 	@echo
 	##
 	## verify the checkout
