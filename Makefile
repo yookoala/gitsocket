@@ -44,7 +44,7 @@ test-server-test-result:
 	cd _test/local && git status | head -1 > status.txt
 	cd _test/local && if ! grep "HEAD detached at origin/master" status.txt; then make test-stop-gitsocket; exit 1 ; fi
 
-test: test-server
+test: test-server test-setup
 
 test-server: test-server-default test-server-socket test-server-port test-server-ip-port
 
@@ -104,7 +104,21 @@ test-server-ip-port:
 	@echo "Test Passed"
 	@echo
 
+test-setup:
+	@echo
+	@echo "gitsocket setup"
+	@echo "---------------"
+	@echo
+	@make test-repo
+	gitsocket setup --gitrepo "_test/local" --command "echo hello world"
+	cat _test/local/.git/hooks/post-checkout
+	@echo
+	if [ "`tail -1 _test/local/.git/hooks/post-checkout`" != "echo hello world" ]; then exit 1; fi
+	@echo
+	@echo "Test Passed"
+	@echo
+
 .PHONY: all build clean test
 .PHONY: test-repo test-start-gitsocket test-stop-gitsocket test-server-test-result
-.PHONY: test-server
+.PHONY: test-server test-setup
 .PHONY: test-server-default test-server-socket test-server-port test-server-ip-port
