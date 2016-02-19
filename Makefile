@@ -34,9 +34,6 @@ test-repo:
 	cd _test/local && git remote add origin ../remote
 	cd _test/local && git push -u origin master
 
-test-start-gitsocket:
-	cd _test/local && gitsocket server --pidfile "test.pid" &
-
 test-stop-gitsocket:
 	cd _test/local && kill `cat "test.pid"`
 
@@ -47,7 +44,7 @@ test: test-repo
 	@echo
 	##
 	## start gitsocket on local
-	make test-start-gitsocket
+	cd _test/local && gitsocket server --daemon --output "test.log" --pidfile "test.pid"
 	##
 	## trigger the gitsocket
 	cd _test/local && ls
