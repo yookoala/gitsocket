@@ -152,15 +152,7 @@ func actionServerMain(c *cli.Context) {
 			panic(err)
 		}
 
-		go handleConnection(conn, stdout, stderr, func(stdout, stderr io.Writer) error {
-			if err := gitFetch(src, stdout, stderr); err != nil {
-				return err
-			}
-			if err := gitCheckOut(src, stdout, stderr); err != nil {
-				return err
-			}
-			return io.EOF
-		})
+		go handleConnection(conn, stdout, stderr, gitActionsFor(src))
 	}
 }
 
