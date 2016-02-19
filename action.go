@@ -15,6 +15,7 @@ import (
 	"text/template"
 
 	"github.com/codegangsta/cli"
+	godaemon "github.com/yookoala/go-daemon"
 )
 
 func handleShutdown(l net.Listener, pidfile string) {
@@ -93,7 +94,24 @@ func address(listen string) (network, address string) {
 	return
 }
 
-func actionHook(c *cli.Context) {
+func actionServer(c *cli.Context) {
+
+	// daemonized server
+	if c.Bool("daemon") {
+		context := new(godaemon.Context)
+		if child, _ := context.Reborn(); child != nil {
+			return
+		}
+		defer context.Release()
+		actionServerMain(c)
+		return
+	}
+
+	// normal server output
+	actionServerMain(c)
+}
+
+func actionServerMain(c *cli.Context) {
 
 	var stdout io.Writer = os.Stdout
 	var stderr io.Writer = os.Stderr

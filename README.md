@@ -74,6 +74,7 @@ OPTIONS:
    --listen, -l "./githook.sock"	path to socket to listen for connection
    --pidfile, -p 			path to pidfile. empty for no pidfile
    --output, -o 			log output of server. empty for displaying on stdout
+   --daemon, -d				run server as daemon. will discard all output unless you have output flag set.```
 
 Command:
 ```bash

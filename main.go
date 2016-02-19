@@ -43,8 +43,12 @@ func main() {
 					Value: "",
 					Usage: "log output of server. empty for displaying on stdout",
 				},
+				cli.BoolFlag{
+					Name:  "daemon, d",
+					Usage: "run server as daemon. will discard all output unless you have output flag set.",
+				},
 			},
-			Action: actionHook,
+			Action: actionServer,
 		},
 		{
 			Name:  "client",
