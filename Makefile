@@ -44,7 +44,7 @@ test: test-repo
 	@echo
 	##
 	## start gitsocket on local
-	cd _test/local && gitsocket server --daemon --output "test.log" --pidfile "test.pid"
+	cd _test/local && gitsocket server --daemon --pidfile "test.pid"
 	##
 	## trigger the gitsocket
 	cd _test/local && ls

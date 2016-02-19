@@ -96,25 +96,9 @@ func address(listen string) (network, address string) {
 
 func actionServer(c *cli.Context) {
 
-	// daemonized server
-	if c.Bool("daemon") {
-		context := new(godaemon.Context)
-		if child, _ := context.Reborn(); child != nil {
-			return
-		}
-		defer context.Release()
-		actionServerMain(c)
-		return
-	}
-
-	// normal server output
-	actionServerMain(c)
-}
-
-func actionServerMain(c *cli.Context) {
-
 	var stdout io.Writer = os.Stdout
 	var stderr io.Writer = os.Stderr
+
 	if output := c.String("output"); output != "" {
 		var f *os.File
 		var err error
@@ -126,7 +110,35 @@ func actionServerMain(c *cli.Context) {
 		stdout = f
 		stderr = f
 		log.SetOutput(f)
+	} else if c.Bool("daemon") {
+		var f *os.File
+		var err error
+		if f, err = os.Create(os.DevNull); err != nil {
+			log.Fatalf("error opening output logfile %#v: %s",
+				output, err.Error())
+			return
+		}
+		stdout = f
+		stderr = f
+		log.SetOutput(f)
 	}
+
+	// daemonized server
+	if c.Bool("daemon") {
+		context := new(godaemon.Context)
+		if child, _ := context.Reborn(); child != nil {
+			return
+		}
+		defer context.Release()
+		actionServerMain(c, stdout, stderr)
+		return
+	}
+
+	// normal server output
+	actionServerMain(c, stdout, stderr)
+}
+
+func actionServerMain(c *cli.Context, stdout, stderr io.Writer) {
 
 	l, err := net.Listen(address(c.String("listen")))
 	if err != nil {
