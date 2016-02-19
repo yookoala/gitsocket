@@ -37,80 +37,57 @@ test-repo:
 test-stop-gitsocket:
 	kill `cat "test.pid"`
 
-test: test-socket test-port
+test-test-result:
+	sleep 1
+	cd _test/local && ls
+	cd _test/local && if [ -f "OTHER.md" ]; then make test-stop-gitsocket; exit 1; fi
+	cd _test/local && git status | head -1 > status.txt
+	cd _test/local && if ! grep "HEAD detached at origin/master" status.txt; then make test-stop-gitsocket; exit 1 ; fi
+
+test: test-socket test-port test-ip-port
 
 test-socket:
-	@make test-repo
 	@echo
 	@echo "Functional Tests (socket)"
 	@echo "-------------------------"
 	@echo
-	##
-	## start gitsocket on local
+	@make test-repo
 	gitsocket server --daemon --gitrepo "_test/local" --pidfile "test.pid"
-	@echo
-	##
-	## trigger the gitsocket
-	cd _test/local && ls
 	gitsocket client
-	@echo
-	##
-	## verify the checkout
-	sleep 1
-	cd _test/local && ls
-	@echo
-	##
-	## test if the OTHER.md is still here
-	cd _test/local && if [ -f "OTHER.md" ]; then make test-stop-gitsocket; exit 1; fi
-	@echo
-	##
-	## test if the git status is HEAD on origin/master
-	cd _test/local && git status | head -1 > status.txt
-	cd _test/local && if ! grep "HEAD detached at origin/master" status.txt; then make test-stop-gitsocket; exit 1 ; fi
-	@echo
-	##
-	## end gitsocket
-	make test-stop-gitsocket
+	@make test-test-result
+	@make test-stop-gitsocket
 	@echo
 	@echo "Test Passed"
 	@echo
 
 test-port:
-	@make test-repo
 	@echo
 	@echo "Functional Tests (port)"
 	@echo "-----------------------"
 	@echo
-	##
-	## start gitsocket on local
+	@make test-repo
 	gitsocket server --daemon --gitrepo "_test/local" --listen 9301 --pidfile "test.pid"
-	@echo
-	##
-	## trigger the gitsocket
-	cd _test/local && ls
 	gitsocket client --conn 9301
+	@make test-test-result
+	@make test-stop-gitsocket
 	@echo
-	##
-	## verify the checkout
-	sleep 1
-	cd _test/local && ls
+	@echo "Test Passed"
 	@echo
-	##
-	## test if the OTHER.md is still here
-	cd _test/local && if [ -f "OTHER.md" ]; then make test-stop-gitsocket; exit 1; fi
+
+test-ip-port:
 	@echo
-	##
-	## test if the git status is HEAD on origin/master
-	cd _test/local && git status | head -1 > status.txt
-	cd _test/local && if ! grep "HEAD detached at origin/master" status.txt; then make test-stop-gitsocket; exit 1 ; fi
+	@echo "Functional Tests (ip:port)"
+	@echo "--------------------------"
 	@echo
-	##
-	## end gitsocket
-	make test-stop-gitsocket
+	@make test-repo
+	gitsocket server --daemon --gitrepo "_test/local" --listen 9301 --pidfile "test.pid"
+	gitsocket client --conn 127.0.0.1:9301
+	@make test-test-result
+	@make test-stop-gitsocket
 	@echo
 	@echo "Test Passed"
 	@echo
 
 .PHONY: all build clean test
-.PHONY: test-repo test-start-gitsocket test-stop-gitsocket
+.PHONY: test-repo test-start-gitsocket test-stop-gitsocket test-test-result
 .PHONY: test-socket test-port
