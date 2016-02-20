@@ -2,10 +2,11 @@
 # for jekyll scss compiler to work
 ---
 
-$primary-fg-color: #fff;
-$primary-fg-color-highlight: #aaf;
-$primary-color: #0562dc;
-$primary-color-dark: #0558c6;
+$primary-fg-color-lighten: rgba(255, 255, 255, 1);
+$primary-fg-color: rgba(255, 255, 255, 0.8);
+$primary-fg-color-darken: rgba(255, 255, 255, 0.5);
+$primary-color: #444;
+$primary-color-dark: #000;
 
 html {
     font-family: sans-serif;
@@ -643,6 +644,7 @@ body {
     line-height: 1;
     margin-top: -80px;
     display: block;
+    color: $primary-fg-color-lighten;
 }
 @media only screen and (min-width: 37.5rem) {
     .header-site .site-title {
@@ -1616,5 +1618,5 @@ footer a {
     margin: 0
 }
 footer a:hover {
-    color: $primary-fg-color-highlight;
+    color: $primary-fg-color-darken;
 }
