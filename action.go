@@ -13,6 +13,7 @@ import (
 	"regexp"
 	"syscall"
 	"text/template"
+	"time"
 
 	"github.com/codegangsta/cli"
 	godaemon "github.com/yookoala/go-daemon"
@@ -127,7 +128,30 @@ func actionServer(c *cli.Context) {
 	if c.Bool("daemon") {
 		context := new(godaemon.Context)
 		if child, _ := context.Reborn(); child != nil {
-			return
+
+			// set timeout time
+			timeout := time.After(time.Second * 30)
+
+			// test if the socket is ready
+			ready := make(chan int)
+			go func() {
+				for {
+					conn, err := net.Dial(address(c.String("listen")))
+					if err == nil {
+						conn.Close() // close the test connection
+						break
+					}
+				}
+				ready <- 0
+			}()
+
+			// wait until timeout or socket ready by child
+			select {
+			case <-timeout:
+				log.Fatalf("timeout: socket not ready in %d seconds", 30)
+			case <-ready:
+				return
+			}
 		}
 		defer context.Release()
 		actionServerMain(c, stdout, stderr)
