@@ -139,6 +139,8 @@ func actionServer(c *cli.Context) {
 						conn.Close() // close the test connection
 						break
 					}
+					// sleep 2 millisecond before next check
+					time.Sleep(time.Millisecond * 2)
 				}
 				ready <- 0
 			}()
