@@ -221,9 +221,13 @@ func actionOnce(c *cli.Context) {
 }
 
 func actionClient(c *cli.Context) {
+
+	log.SetFlags(0)
+	log.SetPrefix("gitsocket client: ")
+
 	conn, err := net.Dial(address(c.String("conn")))
 	if err != nil {
-		log.Fatalf("connection error: %s", err.Error())
+		log.Fatalf("connection error (%s)", err.Error())
 		return
 	}
 
@@ -235,10 +239,10 @@ func actionClient(c *cli.Context) {
 
 		// handle error
 		if err == io.EOF {
-			log.Printf("client: server connect closed")
+			log.Printf("server connect closed")
 			return
 		} else if err != nil {
-			log.Printf("client read error: %#v", err.Error())
+			log.Printf("error (%s)", err.Error())
 			return
 		}
 
