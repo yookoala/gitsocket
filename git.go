@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"io"
 	"log"
 	"os/exec"
@@ -32,7 +33,9 @@ type gitContext struct {
 }
 
 func (c *gitContext) Command(gitcmd string, v ...string) error {
-	cmd := exec.Command("git", append([]string{gitcmd}, v...)...)
+	cmdSlice := append([]string{gitcmd}, v...)
+	fmt.Fprintf(c.Stdout, "git %s\n", strings.Join(cmdSlice, " "))
+	cmd := exec.Command("git", cmdSlice...)
 	cmd.Dir = c.Src.Dir
 	cmd.Stdout = c.Stdout
 	cmd.Stderr = c.Stderr
