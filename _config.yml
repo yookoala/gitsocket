@@ -1,0 +1,39 @@
+# Site settings
+title: gitsocket
+description: git auto-deploy on your own server
+baseurl: "/gitsocket" # the subpath of your site, e.g. /blog/
+url: "http://yookoala.github.io" # the base hostname & protocol for your site
+
+# User settings
+username: yookoala
+user_description: A Web Developer who loves open source
+user_title: Koala Yeung
+email: koalay@gmail.com
+github_username:  yookoala
+github_reponame:  gitsocket
+
+# Build settings
+markdown: kramdown
+permalink: /:title/
+
+# html minify
+compress_html:
+  clippings: all
+  comments: all
+  endings: []
+  profile: false
+
+# Links to include in menu navigation
+# For external links add external: true
+links:
+  - title: Home
+    url: /
+  - title: Series
+    url: /series
+  - title: Tags
+    url: /tags
+  - title: About Me
+    url: /about
+
+# exclude my node related stuff
+exclude: ['README.md', 'LICENSE']

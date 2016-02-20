@@ -1,0 +1,16 @@
+<header class="header-site" role="banner">
+    <div class="content">
+        <h1>
+            <span class="site-title">{{site.title}}</span>
+            <span class="site-description">{{site.description}}</span>
+        </h1>
+        <div class="icons-home">
+            <a title="Source Code" aria-label="Source Code" target="_blank" href="https://github.com/{{site.github_username}}/{{site.github_reponame}}"><svg class="icon icon-source-alt"><use xlink:href="#icon-source-alt"></use></svg></a>
+            <a title="Issue Tracker" aria-label="Issue Tracker" target="_blank" href="https://github.com/{{site.github_username}}/{{site.github_reponame}}/issues"><svg class="icon icon-issue-alt"><use xlink:href="#icon-issue-alt"></use></svg></a>
+            <a title="FAQ" aria-label="FAQ" href="{{ "/faq" | prepend: site.baseurl }}"><svg class="icon icon-faq-alt"><use xlink:href="#icon-faq-alt"></use></svg></a>
+            <a title="Download" aria-label="Download" target="_blank" href="https://github.com/{{site.github_username}}/{{site.github_reponame}}/archive/master.zip"><svg class="icon icon-download-alt"><use xlink:href="#icon-download-alt"></use></svg></a>
+        </div>
+    </div>
+    <a role="button" class="down" data-scroll href="#scroll"><svg class="icon icon-angle-down"><use xlink:href="#icon-angle-down"></use></svg></a>
+    {% include nav.html %}
+</header>
