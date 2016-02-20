@@ -38,7 +38,6 @@ test-stop-gitsocket:
 	kill `cat "test.pid"`
 
 test-server-test-result:
-	sleep 1
 	cd _test/local && ls
 	cd _test/local && if [ -f "OTHER.md" ]; then make test-stop-gitsocket; exit 1; fi
 	cd _test/local && git status | head -1 > status.txt
