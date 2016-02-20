@@ -49,6 +49,10 @@ func (c *gitContext) HardPull() error {
 	if err := c.Command("reset", "--hard", c.Src.String()); err != nil {
 		return err
 	}
+	if err := c.Command("clean", "-df", c.Src.String()); err != nil {
+		// force remove files that are not in repository nor in .gitignore
+		return err
+	}
 	if err := c.Command("checkout"); err != nil {
 		return err
 	}
