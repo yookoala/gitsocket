@@ -1,14 +1,16 @@
-gitsocket
-=========
+# gitsocket [![Travis CI results][travis]](https://travis-ci.org/yookoala/gitsocket?branch=master)
 
-**gitsocket** is a command line tool to help auto deploy with git.
+**gitsocket** is a command line tool to help setup github / bitbucket webhook on your local machine. It helps you to do git based auto deploy.
 
-It can start a lightweight server process that listen to a socket
-request and triggers the command `git fetch [remote source]` and
-`git checkout [remote source]/[branch]`.
+For more information, please read the [project website][gh-pages].
 
-It also help you to setup git hook so you can run command after
-any triggered git checkout.
+[travis]: https://api.travis-ci.org/yookoala/gitsocket.svg?branch=master
+[gh-pages]: https://yookoala.github.io/gitsocket/
+
+
+## Install
+
+### System Requirement
 
 **gitsocket** is written in [golang][golang]. It has only been tested
 and used on Linux. However, any POSIX environment (e.g. Mac OSX)
@@ -17,9 +19,6 @@ with [git][git] and [vi][vi] installed should be fine.
 [golang]: https://golang.org
 [git]: https://git-scm.com/
 [vi]: http://www.vim.org
-
-
-## Install
 
 ### Manually Compile and Install
 
