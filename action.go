@@ -39,9 +39,7 @@ func handleShutdown(l net.Listener, pidfile string) {
 	}
 }
 
-type commandFn func(stdout, stderr io.Writer) error
-
-func handleConnection(conn net.Conn, stdout, stderr io.Writer, fn commandFn) {
+func handleConnection(conn net.Conn, src gitSource, stdout, stderr io.Writer) {
 	log.Printf("server: handleConnection")
 	defer conn.Close()
 
@@ -66,7 +64,7 @@ func handleConnection(conn net.Conn, stdout, stderr io.Writer, fn commandFn) {
 		rw := io.MultiWriter(conn, stdout)
 		ew := io.MultiWriter(conn, stderr)
 
-		if err := fn(rw, ew); err == io.EOF {
+		if err := src.Context(rw, ew).HardPull(); err == io.EOF {
 			log.Printf("server: connection terminated")
 			return
 		} else if err != nil {
@@ -189,7 +187,7 @@ func actionServerMain(c *cli.Context, stdout, stderr io.Writer) {
 			panic(err)
 		}
 
-		go handleConnection(conn, stdout, stderr, gitActionsFor(src))
+		go handleConnection(conn, src, stdout, stderr)
 	}
 }
 
@@ -214,7 +212,7 @@ func actionOnce(c *cli.Context) {
 	src := gitSource{mustGitRootPath(c.String("gitrepo")),
 		c.String("remote"), c.String("branch")}
 
-	if err := gitActionsFor(src)(stdout, stderr); err != io.EOF {
+	if err := src.Context(stdout, stderr).HardPull(); err != io.EOF {
 		log.Fatalf("error: %s", err.Error())
 	}
 }

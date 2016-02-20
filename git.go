@@ -7,6 +7,8 @@ import (
 	"strings"
 )
 
+// gitSource represents a git local repository
+// with specified name of remote upstream and branch
 type gitSource struct {
 	Dir    string
 	Name   string
@@ -17,36 +19,38 @@ func (src gitSource) String() string {
 	return src.Name + "/" + src.Branch
 }
 
-// gitActionsFor returns commandFn to run all the
-// gitsocket relevant git command for the given source src
-func gitActionsFor(src gitSource) commandFn {
-	return func(stdout, stderr io.Writer) (err error) {
-		if err := gitFetch(src, stdout, stderr); err != nil {
-			return err
-		}
-		if err := gitCheckOut(src, stdout, stderr); err != nil {
-			return err
-		}
-		return io.EOF
+func (src gitSource) Context(stdout, stderr io.Writer) *gitContext {
+	return &gitContext{src, stdout, stderr}
+}
+
+// gitContext represents a context to run git command
+// includes a gitSource and the output writers
+type gitContext struct {
+	Src    gitSource
+	Stdout io.Writer
+	Stderr io.Writer
+}
+
+func (c *gitContext) Command(gitcmd string, v ...string) error {
+	cmd := exec.Command("git", append([]string{gitcmd}, v...)...)
+	cmd.Dir = c.Src.Dir
+	cmd.Stdout = c.Stdout
+	cmd.Stderr = c.Stderr
+	return cmd.Run()
+}
+
+func (c *gitContext) HardPull() error {
+	if err := c.Command("fetch", c.Src.Name, c.Src.Branch); err != nil {
+		return err
 	}
+	if err := c.Command("checkout", c.Src.String()); err != nil {
+		return err
+	}
+	return io.EOF
 }
 
-func gitFetch(src gitSource, stdout, stderr io.Writer) error {
-	cmd := exec.Command("git", "fetch", src.Name, src.Branch)
-	cmd.Dir = src.Dir
-	cmd.Stdout = stdout
-	cmd.Stderr = stderr
-	return cmd.Run()
-}
-
-func gitCheckOut(src gitSource, stdout, stderr io.Writer) error {
-	cmd := exec.Command("git", "checkout", src.String())
-	cmd.Dir = src.Dir
-	cmd.Stdout = stdout
-	cmd.Stderr = stderr
-	return cmd.Run()
-}
-
+// gitRootPath obtains root path of a git repository
+// with rev-parse command
 func gitRootPath(dir string) (rootPath string, err error) {
 	cmd := exec.Command("git", "rev-parse", "--show-toplevel")
 	if dir != "" {
