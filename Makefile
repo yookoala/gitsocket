@@ -40,8 +40,8 @@ test-stop-gitsocket:
 test-server-test-result:
 	cd _test/local && ls
 	cd _test/local && if [ -f "OTHER.md" ]; then make test-stop-gitsocket; exit 1; fi
-	cd _test/local && git status | head -1 > status.txt
-	cd _test/local && if ! grep "HEAD detached at origin/master" status.txt; then make test-stop-gitsocket; exit 1 ; fi
+	cd _test/local && git log --format=oneline | cut -d " " -f2- > current.txt
+	cd _test/local && if ! grep "Initial commit" current.txt; then make test-stop-gitsocket; exit 1; fi
 
 test: test-server test-once test-setup
 

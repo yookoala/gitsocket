@@ -46,7 +46,10 @@ func (c *gitContext) HardPull() error {
 	if err := c.Command("fetch", c.Src.Name, c.Src.Branch); err != nil {
 		return err
 	}
-	if err := c.Command("checkout", c.Src.String()); err != nil {
+	if err := c.Command("reset", "--hard", c.Src.String()); err != nil {
+		return err
+	}
+	if err := c.Command("checkout"); err != nil {
 		return err
 	}
 	return io.EOF
