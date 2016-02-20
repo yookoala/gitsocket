@@ -28,12 +28,11 @@ compress_html:
 links:
   - title: Home
     url: /
-  - title: Series
-    url: /series
-  - title: Tags
-    url: /tags
-  - title: About Me
-    url: /about
+  - title: News
+    url: /news
+  - title: FAQ
+    url: /faq
+
 
 # exclude my node related stuff
 exclude: ['README.md', 'LICENSE']
