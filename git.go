@@ -1,12 +1,15 @@
 package main
 
 import (
-	"fmt"
 	"io"
 	"log"
 	"os/exec"
 	"strings"
 )
+
+func newSource(dir, name, branch string) *gitSource {
+	return &gitSource{dir, name, branch}
+}
 
 // gitSource represents a git local repository
 // with specified name of remote upstream and branch
@@ -21,7 +24,7 @@ func (src gitSource) String() string {
 }
 
 func (src gitSource) Context(stdout, stderr io.Writer) *gitContext {
-	return &gitContext{src, stdout, stderr}
+	return &gitContext{src, stdout, stderr, log.New(stdout, "", log.LstdFlags)}
 }
 
 // gitContext represents a context to run git command
@@ -30,11 +33,12 @@ type gitContext struct {
 	Src    gitSource
 	Stdout io.Writer
 	Stderr io.Writer
+	Logger *log.Logger
 }
 
 func (c *gitContext) Command(gitcmd string, v ...string) error {
 	cmdSlice := append([]string{gitcmd}, v...)
-	fmt.Fprintf(c.Stdout, "git %s\n", strings.Join(cmdSlice, " "))
+	c.Logf("git %s\n", strings.Join(cmdSlice, " "))
 	cmd := exec.Command("git", cmdSlice...)
 	cmd.Dir = c.Src.Dir
 	cmd.Stdout = c.Stdout
@@ -57,6 +61,14 @@ func (c *gitContext) HardPull() error {
 		return err
 	}
 	return io.EOF
+}
+
+func (c *gitContext) Log(msg string) {
+	c.Logger.Print(msg)
+}
+
+func (c *gitContext) Logf(format string, v ...interface{}) {
+	c.Logger.Printf(format, v...)
 }
 
 // gitRootPath obtains root path of a git repository

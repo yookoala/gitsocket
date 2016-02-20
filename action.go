@@ -39,7 +39,7 @@ func handleShutdown(l net.Listener, pidfile string) {
 	}
 }
 
-func handleConnection(conn net.Conn, src gitSource, stdout, stderr io.Writer) {
+func handleConnection(conn net.Conn, src *gitSource, stdout, stderr io.Writer) {
 	log.Printf("server: handleConnection")
 	defer conn.Close()
 
@@ -57,14 +57,15 @@ func handleConnection(conn net.Conn, src gitSource, stdout, stderr io.Writer) {
 		}
 
 		data := bufbytes[0:nr]
-		fmt.Fprintf(conn, "echo: ")
-		conn.Write(data)
 		log.Printf("server got: %s", data)
 
 		rw := io.MultiWriter(conn, stdout)
 		ew := io.MultiWriter(conn, stderr)
+		ctx := src.Context(rw, ew)
+		ctx.Logf("command received: %s", data)
 
-		if err := src.Context(rw, ew).HardPull(); err == io.EOF {
+		if err := ctx.HardPull(); err == io.EOF {
+			ctx.Logf("command completed")
 			log.Printf("server: connection terminated")
 			return
 		} else if err != nil {
@@ -180,8 +181,8 @@ func actionServerMain(c *cli.Context, stdout, stderr io.Writer) {
 	go handleShutdown(l, pidfile)
 
 	// define git source to update from
-	src := gitSource{mustGitRootPath(c.String("gitrepo")),
-		c.String("remote"), c.String("branch")}
+	src := newSource(mustGitRootPath(c.String("gitrepo")),
+		c.String("remote"), c.String("branch"))
 
 	for {
 		conn, err := l.Accept()
@@ -211,8 +212,8 @@ func actionOnce(c *cli.Context) {
 	}
 
 	// define git source to update from
-	src := gitSource{mustGitRootPath(c.String("gitrepo")),
-		c.String("remote"), c.String("branch")}
+	src := newSource(mustGitRootPath(c.String("gitrepo")),
+		c.String("remote"), c.String("branch"))
 
 	if err := src.Context(stdout, stderr).HardPull(); err != io.EOF {
 		log.Fatalf("error: %s", err.Error())
