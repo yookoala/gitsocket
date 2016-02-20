@@ -65,9 +65,8 @@ test-repo:
 	@echo "-  test repository created" ${LF}${OK}
 
 test-stop-gitsocket:
-	@echo -n "stop gitsocket: "
-	@kill `cat "test.pid"`
-	@echo "[ok]"
+	@echo -n "-  stop gitsocket"
+	@kill `cat "test.pid"` && echo ${LF}${OK}
 
 test-server-test-result:
 	@echo "-  resulting local directory" ${LF}${OK}
