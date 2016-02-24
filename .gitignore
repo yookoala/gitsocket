@@ -6,3 +6,7 @@ _test
 
 # vim temp files
 *.swp
+
+# intellij project file
+gitsocket.iml
+.idea
