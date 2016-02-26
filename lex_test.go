@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"io"
 	"strings"
 	"testing"
@@ -8,8 +9,12 @@ import (
 
 func TestLexer_next(t *testing.T) {
 	reader, writer := io.Pipe()
-	lex := newLex(reader)
-	lex.readbuf = make([]byte, 0, 3)
+	lex := &lexer{
+		input:   bufio.NewReader(reader),
+		state:   lexText,
+		readbuf: make([]byte, 0, 3), // test with small buffer
+		items:   make(chan item),
+	}
 
 	out := make(chan rune)
 	go func() {
@@ -40,8 +45,12 @@ func TestLexer_next(t *testing.T) {
 func TestLexer_backup(t *testing.T) {
 
 	reader, writer := io.Pipe()
-	lex := newLex(reader)
-	lex.readbuf = make([]byte, 0, 3)
+	lex := &lexer{
+		input:   bufio.NewReader(reader),
+		state:   lexText,
+		readbuf: make([]byte, 0, 3), // test with small buffer
+		items:   make(chan item),
+	}
 
 	go func() {
 		writer.Write([]byte("hello 你好"))
@@ -103,7 +112,6 @@ func TestLexer(t *testing.T) {
 
 	for _, test := range tests {
 		lex := newLex(strings.NewReader(test.Input))
-		go lex.run()
 		i := 0
 		for ; ; i++ {
 			token := lex.nextItem()

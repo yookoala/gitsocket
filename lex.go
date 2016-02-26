@@ -51,13 +51,15 @@ type lexer struct {
 	items   chan item
 }
 
-func newLex(input io.Reader) *lexer {
-	return &lexer{
+func newLex(input io.Reader) (l *lexer) {
+	l = &lexer{
 		input:   bufio.NewReader(input),
 		state:   lexText,
 		readbuf: make([]byte, 0, 1024),
 		items:   make(chan item),
 	}
+	go l.run()
+	return
 }
 
 // run runs the state machine for the lexer.
