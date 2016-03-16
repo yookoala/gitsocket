@@ -19,6 +19,23 @@ const (
 	itemEOF                   // end of connection
 )
 
+// GoString implements GoStringer for logging
+func (t itemType) GoString() string {
+	switch t {
+	case itemError:
+		return "itemError"
+	case itemText:
+		return "itemText"
+	case itemSpace:
+		return "itemSpace"
+	case itemEOL:
+		return "itemEOL"
+	case itemEOF:
+		return "itemEOF"
+	}
+	return "itemType(unknown)"
+}
+
 const (
 	eof = -iota
 )
@@ -35,6 +52,11 @@ const (
 type item struct {
 	typ itemType
 	val string
+}
+
+// GoString implements GoStringer for logging
+func (i item) GoString() string {
+	return fmt.Sprintf("item{typ:%#v, val:%#v}", i.typ, i.val)
 }
 
 // stateFn represents the state of the scanner as a function that returns the next state.
