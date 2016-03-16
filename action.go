@@ -64,7 +64,7 @@ func handleConnection(conn net.Conn, src *gitSource, stdout, stderr io.Writer) {
 		ctx := src.Context(rw, ew)
 		ctx.Logf("command received: %s", data)
 
-		if err := ctx.HardPull(); err == io.EOF {
+		if err := ctx.ForcePull(); err == io.EOF {
 			ctx.Logf("command completed")
 			log.Printf("server: connection terminated")
 			return
@@ -215,7 +215,7 @@ func actionOnce(c *cli.Context) {
 	src := newSource(mustGitRootPath(c.String("gitrepo")),
 		c.String("remote"), c.String("branch"))
 
-	if err := src.Context(stdout, stderr).HardPull(); err != io.EOF {
+	if err := src.Context(stdout, stderr).ForcePull(); err != io.EOF {
 		log.Fatalf("error: %s", err.Error())
 	}
 }

@@ -44,8 +44,10 @@ const (
 	charSmallCap = "abcdefghijklmnopqrstuvwxyz"
 	charCap      = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 	charNumber   = "0123456789"
+	charConnect  = "-_"
 	charAlphabet = charSmallCap + charCap
 	charAlphaNum = charAlphabet + charNumber
+	charWord     = charAlphaNum + charConnect
 )
 
 // item contains information of token in a selector
@@ -188,7 +190,7 @@ func lexText(l *lexer) stateFn {
 		l.emit(itemEOF)
 		break
 	default:
-		l.acceptRun(charAlphaNum)
+		l.acceptRun(charWord)
 		l.emit(itemText)
 		return lexText
 	}

@@ -19,8 +19,8 @@ func TestParse(t *testing.T) {
 			err:   "Parse error: unknown command \"hello\"",
 		},
 		{
-			input: "hardpull origin master",
-			cmd:   "hardpull",
+			input: "force-pull origin master",
+			cmd:   "force-pull",
 			argv:  []string{"origin", "master"},
 		},
 	}

@@ -46,7 +46,7 @@ func (c *gitContext) Command(gitcmd string, v ...string) error {
 	return cmd.Run()
 }
 
-func (c *gitContext) HardPull() error {
+func (c *gitContext) ForcePull() error {
 	if err := c.Command("fetch", c.Src.Name, c.Src.Branch); err != nil {
 		return err
 	}

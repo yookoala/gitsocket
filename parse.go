@@ -13,8 +13,8 @@ type statement struct {
 
 func (c *statement) run() error {
 	switch c.cmd {
-	case "hardpull":
-		return c.ctx.HardPull()
+	case "force-pull":
+		return c.ctx.ForcePull()
 	}
 	return fmt.Errorf("Statement: unknown command %#v", c.cmd)
 }
@@ -33,7 +33,7 @@ func parse(ctx *gitContext, l *lexer) (cout <-chan *statement) {
 			}
 		}
 		switch cmd := tokenStrs[0]; cmd {
-		case "hardpull":
+		case "force-pull":
 			ch <- &statement{
 				ctx:  ctx,
 				cmd:  cmd,
