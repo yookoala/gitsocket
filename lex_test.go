@@ -112,11 +112,12 @@ func TestLexer(t *testing.T) {
 
 	for _, test := range tests {
 		lex := newLex(strings.NewReader(test.Input))
-		i := 0
+		i, hasEOF := 0, false
 		for ; ; i++ {
 			token := lex.nextItem()
 			if token.typ == itemEOF {
 				// do not use EOF
+				hasEOF = true
 				break
 			}
 			if i >= len(test.Items) {
@@ -128,6 +129,9 @@ func TestLexer(t *testing.T) {
 			}
 		}
 
+		if want, have := true, hasEOF; want != have {
+			t.Errorf("expected hasEOF=%#v; got %#v", want, have)
+		}
 		if want, have := len(test.Items), i; want != have {
 			t.Errorf("less tokens than expected. want %#v got %#v", want, have)
 			break
